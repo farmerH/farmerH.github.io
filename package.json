@@ -1,0 +1,13 @@
+{
+  "name": "blog",
+  "version": "1.0.0",
+  "description": "一个简单的个人小站",
+  "main": "index.js",
+  "repository": "git@github.com:farmerH/farmerH.github.io.git",
+  "author": "hongxu <hongxu_itet@126.com>",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vuepress dev docs",
+    "build": "vuepress build docs"
+  }
+}
