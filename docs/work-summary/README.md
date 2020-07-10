@@ -1,0 +1,176 @@
+
+## 技术框架
+  - vue框架
+
+## 一、ios设备下点击软键盘上面验证码后填入两次到输入框
+
+### 问题描述：
+登录页面，使用手机号并获取验证码进行用户的登录，当在用户输入完正确的手机号之后，点击获取验证码按钮，系统会给用户填入的登录手机账号发送6位随机的数字，然后在用户点击【输入验证码】输入框时，ios设备会调取软键盘，并在软键盘上方显示短信收到的6位随机的数字验证码，点击软键盘中显示的验证码会自动填入到页面输入框中并出现自动填入了两次(如图)：
+
+<img src="https://h5.test.ec.fkdxg.com/res/images/docs/smsDouble.jpeg" width="375">
+
+### 正常表现：
+自动填入输入框中的验证码显示一次。
+
+### 解决办法：
+通过设置input输入框的最大输入长度，该长度与验证码位数相等。另type类型为password也可以这样设置，但type为number时，maxlength属性是失效的。
+```
+  <input type="text" maxlength="6" />
+```
+
+## 二、ios设备下设置文本溢出省略号展示时，省略号与文字重叠
+
+### 问题描述：
+有时候为了界面展示美观，在处理文本内容的时候往往会一行或者多行展示文本，超出布局范围的内容省略号展示。在我们已经设置了文本超出省略号展示之后，ios设备下面发现省略号与相邻的文本出现重叠现象(如图)：
+
+<img src="https://h5.test.ec.fkdxg.com/res/images/docs/textOverflow.jpeg" width="375">
+
+### 正常表现：
+文本和省略号不重叠并以正常默认文本间距展示。
+
+### 解决办法：
+
+给元素标签设置文本的对齐方式，本项目中需要设置的是文本左对齐text-align：left；
+
+问题出现是的代码设置：
+
+```
+  p {
+    width:5.4rem;                     // 设置元素的固定宽度
+    overflow: hidden;                 // 超出宽度部分隐藏
+    display: -webkit-box;             // 定义p元素的盒模型
+    text-overflow: ellipsis;          // 文本溢出包含元素时,显示省略符号来代表被修剪的文本
+    -webkit-box-orient: vertical;     // 设置p元素从上向下垂直排列子元素
+    -webkit-line-clamp: 1;            // 限制文本的显示行数
+  } 
+``` 
+
+问题解决：
+
+```
+ p {
+      width:5.4rem;                     // 设置元素的固定宽度
+      overflow: hidden;                 // 超出宽度部分隐藏
+      display: -webkit-box;             // 定义p元素的盒模型
+      text-overflow: ellipsis;          // 文本溢出包含元素时,显示省略符号来代表被修剪的文本
+      -webkit-box-orient: vertical;     // 设置p元素从上向下垂直排列子元素
+      -webkit-line-clamp: 1;            // 限制文本的显示行数
+
+      text-align:left;                  // 设置文本的对齐方式
+  }
+```
+
+## 三、页面底部按钮fixed定位时，在移动端的页面中如果遇到input，textarea操作时（主要是获取焦点事件），fixed定位的模块或者按钮随着软键盘上移。
+
+### 问题描述：
+页面布局往往会设置页面内容和底部操作按钮两个部分，宠芽商城目前采用的布局方式是底部操作按钮采用fixed定位的方式，
+```
+.footer{
+  position:fixed;
+  left:0;
+  bottom:0; 
+}
+```
+
+又因为页面内容部分很可能存在表单元素，例如input，textarea，那么在输入框或者这文本域获取到焦点时，安卓设备中表现为系统调起软键盘，同时出现的问题就是底部fixed定位过的操作按钮也会随着软键盘上滑；而ios设备中fixed定位的元素是不会随着软键盘的调起而上滑，这样就不会实现页面在不同平台的统一性。（如图）
+
+<img src="https://h5.test.ec.fkdxg.com/res/images/docs/fixed.jpeg" width="375">
+
+### 正常表现
+安卓设备中应该与ios设备中表现一致，fixed定位的图片不随着系统软键盘
+
+### 解决方法
+依赖clientHeight，通过window.onresize判断可视区域的高度与初始时的可视区域的高度做对比，对底部fixed定位的元素做相应的操作。
+
+代码如下：
+
+```
+  export default{
+    data(){
+      return {
+        isShow:true,   // 控制底部fixed定位元素是否显示，默认是显示
+        clientHeight:document.documentElement.clientHeight
+      }
+    },
+    mounted(){
+      window.onresize= ()=>{
+        if(this.clientHeight > document.documentElement.clientHeight) {
+          this.isShow =false  // 文档可视高度小于页面初始的可视高度，隐藏底部定位的操作栏
+        }else{ 
+          this.isShow = true   // 显示底部定位的操作栏
+        }
+      }
+    }
+  }
+```
+
+## 四、微信环境中软键盘【完成】收起软键盘后页面没有回弹到最顶部（0,0），留出一块空白区域。
+
+### 问题描述：
+
+确认订单页面，设计一个买家留言的模块，在输入框获取焦点时调起系统软键盘，输入留言后或者直接触发软键盘上的【完成】按钮，收起系统软键盘，此时存在的问题ios设备中出现页面没有恢复到底部位置，留出一块空白，手动向下滑动页面才回弹回原来位置；安卓设备中可以正常恢复。（如图：）
+
+<img src="https://h5.test.ec.fkdxg.com/res/images/docs/blank02.jpeg" width="375"> <img src="https://h5.test.ec.fkdxg.com/res/images/docs/blank.png" width="375">
+
+### 正常表现
+
+ios设备中要让页面恢复到页面底部，不要出现空白。
+
+### 解决方法
+
+鉴于我们页面当中只存在一个输入框的情况，可采用输入框失去焦点事件触发是，强制性的将页面滚动到顶部位置。具体代码如下：
+```
+html:
+
+<input type="textarea" @blur="fixScroll">
+
+js:
+export default{
+  data(){
+    return{
+
+    }
+  },
+  methods:{
+    fixScroll() {
+      let u = navigator.userAgent;
+      let isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+      if (isiOS) {
+       window.scrollTo(0, 0);
+      }
+     }
+  }
+}
+```
+
+另：如果页面当中存在两个及两个以上的输入框的情况下，不建议采用此方法。
+
+## 五、ios设备下Safari浏览器中，输入框回显内容时黄色背景
+
+### 问题描述
+项目中涉及到获取验证码的输入时，在点击获取验证按钮发送请求时（这里手机号和操作设备是一致的），手机号接收到验证码的短信，此时ios设备中，点击填写验证码输入框时调起系统软键盘，ios系统软键盘会自动将验证码显示在软键盘顶部，直接点击软键盘的验证码会自动将验证码信息填入页面的输入框，同时出现的问题是【被填入验证码信息的输入框出现黄色背景】，影响美观。安卓设备中无此表现。现象参照如图：
+
+<img src="https://h5.test.ec.fkdxg.com/res/images/docs/yellowBg.jpeg" width="375">
+
+### 正常表现
+ios下input框不显示黄色背景色
+
+### 解决方法
+
+百度搜索一番之后，大篇幅的文章给出的解决方法是，然并不能解决项目中问题，代码如下：
+```
+input:-webkit-autofill{
+   box-shadow: 0 0 0px 1000px white inset !important;
+}
+```
+本项目中最终采用的解决方法是设置autofill属性值延时出现，代码实现如下：
+
+```
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-transition-delay: 99999s;
+    -webkit-transition: color 99999s ease-out, background-color 99999s ease-out;
+}
+```
