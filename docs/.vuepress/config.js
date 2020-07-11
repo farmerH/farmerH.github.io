@@ -10,25 +10,15 @@ module.exports = {
   },
   themeConfig: {
       nav: [ // 导航栏配置
-          { 
-              text: 'GitHub', 
-              link: 'https://github.com/farmerH' 
-          }
+          { text: 'GitHub', link: 'https://github.com/farmerH' },
       ],
-      sidebar: [
-            { // 左侧导航栏配置
-                    title: '移动端兼容',
-                    collapsable: true, //是否展开
-                    children: [
-                        '/work-summary/'
-                    ]
+      sidebar: [{ // 左侧导航栏配置
+                  title: 'Vuepress搭建'
+                  // collapsable: false, //是否展开
               },
-              {
-                  title:'git使用总结',
-                  children:[
-                      'git-flow'
-                  ]
-              }
+              // ['/accumulate/2019/准备工作', '准备工作']
           ]
+          // sidebar: 'auto', // 侧边栏配置
+          // sidebarDepth: 2, // 侧边栏显示2级
   }
 };
